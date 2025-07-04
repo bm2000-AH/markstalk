@@ -11,7 +11,7 @@ from config import Config
 # Расширения
 db = SQLAlchemy()
 login_manager = LoginManager()
-csrf = CSRFProtect()  # ✅ CSRF защита
+csrf = CSRFProtect()
 login_manager.login_view = 'main.login'
 
 # 🔒 Безопасная домашняя страница админки
@@ -64,7 +64,7 @@ class AdminOnlyModelView(ModelView):
 class PlaceAdminView(AdminOnlyModelView):
     def delete_model(self, model):
         if hasattr(model, 'purchases') and model.purchases:
-            flash("❌ Нельзя удалить место — к нему привязаны покупки.", 'error')
+            flash("\u274c Нельзя удалить место — к нему привязаны покупки.", 'error')
             return False
         return super().delete_model(model)
 
@@ -76,15 +76,18 @@ def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
 
+    # Инициализация расширений
     db.init_app(app)
-    csrf.init_app(app)
+    csrf.init_app(app)       # ✅ CSRF init
     login_manager.init_app(app)
     Migrate(app, db)
 
-    from app.models import User, Place, Purchase, Review, Complaint
+    # Импорт моделей и блюпринтов
+    from app.models import User, Place, Purchase, Review, Complaint, Favorite
     from app.routes import bp as main_bp
     app.register_blueprint(main_bp)
 
+    # Админ-панель
     admin.init_app(app)
     admin.add_view(UserAdminView(User, db.session))
     admin.add_view(PlaceAdminView(Place, db.session))
@@ -95,11 +98,4 @@ def create_app():
     with app.app_context():
         db.create_all()
 
-    # ✅ Добавляем CSRF токен в шаблонный контекст
-    @app.context_processor
-    def inject_csrf_token():
-        from flask_wtf.csrf import generate_csrf
-        return dict(csrf_token=generate_csrf)
-
     return app
-
