@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block title %}Отзывы обо мне{% endblock %}
+
+{% block content %}
+  <h2 class="mb-4">Отзывы обо мне</h2>
+
+  {% if reviews %}
+    {% for review in reviews %}
+      <div class="card mb-3">
+        <div class="card-body">
+          <p><strong>{{ review.reviewer.username }}</strong> поставил {{ review.rating }}★</p>
+          <p>{{ review.text }}</p>
+
+          {% if review.reply %}
+            <div class="bg-light p-2 rounded mt-2 text-dark">
+              <strong>Ответ продавца:</strong>
+              <p>{{ review.reply }}</p>
+            </div>
+          {% elif current_user.id == review.seller_id %}
+            <form method="POST" action="{{ url_for('main.respond_review', review_id=review.id) }}">
+              <div class="form-group">
+                <textarea name="response" class="form-control" rows="2" placeholder="Ответить на отзыв..."></textarea>
+              </div>
+              <button type="submit" class="btn btn-sm btn-secondary mt-2">Ответить</button>
+            </form>
+          {% endif %}
+        </div>
+      </div>
+    {% endfor %}
+  {% else %}
+    <p>О вас пока нет отзывов.</p>
+  {% endif %}
+{% endblock %}

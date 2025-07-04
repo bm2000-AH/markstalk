@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block title %}Мои жалобы{% endblock %}
+
+{% block content %}
+  <h1>🚨 Мои жалобы</h1>
+  {% if complaints %}
+    <ul>
+      {% for c in complaints %}
+        <li>На пользователя {{ c.seller_id }}: {{ c.text }}</li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>Жалоб пока нет.</p>
+  {% endif %}
+{% endblock %}

@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block title %}Пожаловаться{% endblock %}
+{% block content %}
+  <h2>Пожаловаться на продавца</h2>
+  <form method="POST">
+    {{ form.hidden_tag() }}
+    {{ form.text.label }} {{ form.text(rows=3) }}<br>
+    {{ form.submit() }}
+  </form>
+{% endblock %}

@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block title %}Новое место{% endblock %}
+{% block content %}
+  <h2>Добавить место</h2>
+  <form method="POST" enctype="multipart/form-data">
+    {{ form.hidden_tag() }}
+    {{ form.title.label }} {{ form.title() }}<br>
+    {{ form.description.label }} {{ form.description(rows=3) }}<br>
+    {{ form.latitude.label }} {{ form.latitude() }}<br>
+    {{ form.longitude.label }} {{ form.longitude() }}<br>
+    {{ form.price.label }} {{ form.price() }}<br>
+    {{ form.image.label }} {{ form.image() }}<br>
+    {{ form.submit() }}
+  </form>
+{% endblock %}

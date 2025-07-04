@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block title %}Ответ на {{ target }}{% endblock %}
+
+{% block content %}
+  <h2>Ответ на {{ target }}</h2>
+  <form method="post">
+    {{ form.hidden_tag() }}
+    <p>{{ form.response.label }}<br>{{ form.response(rows=4) }}</p>
+    <p>{{ form.submit() }}</p>
+  </form>
+{% endblock %}

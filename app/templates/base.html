@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <title>{% block title %}Маркет координат{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <style>
+    body {
+      background-color: #121212;
+      color: #e0e0e0;
+      font-family: sans-serif;
+    }
+
+    nav {
+      background-color: #1f1f1f;
+      color: #ffffff;
+      padding: 10px 20px;
+      border-bottom: 1px solid #333;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+    }
+
+    nav a {
+      color: #ffffff;
+      text-decoration: none;
+      margin-right: 15px;
+    }
+
+    nav a:hover {
+      text-decoration: underline;
+    }
+
+    .flashes {
+      list-style: none;
+      padding: 10px;
+      margin: 10px 0;
+      background-color: #333333;
+      border: 1px solid #444444;
+    }
+
+    .container {
+      padding: 20px;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <div>
+      <a href="{{ url_for('main.index') }}">🏠 Главная</a>
+      {% if current_user.is_authenticated %}
+        <a href="{{ url_for('main.create_place') }}">➕ Добавить место</a>
+        <a href="{{ url_for('main.my_places') }}">📦 Мои товары</a>
+        <a href="{{ url_for('main.my_purchases') }}">🛒 Мои покупки</a>
+        <a href="{{ url_for('main.favorites') }}">❤️ Избранное</a>
+        <a href="{{ url_for('main.chat_list') }}">💬 Мои чаты</a>
+        <a href="{{ url_for('main.my_reviews') }}">⭐ Мои отзывы</a>
+        <a href="{{ url_for('main.reviews_about_me') }}">📢 Отзывы обо мне</a>
+        <a href="{{ url_for('main.my_complaints') }}">🚨 Мои жалобы</a>
+      {% endif %}
+    </div>
+    <div>
+      {% if current_user.is_authenticated %}
+        <span><strong>👤 {{ current_user.username }}</strong></span>
+        {% if current_user.is_admin %}
+          <a href="{{ url_for('admin.index') }}">⚙️ Админка</a>
+        {% endif %}
+        <a href="{{ url_for('main.logout') }}">Выйти</a>
+      {% else %}
+        <a href="{{ url_for('main.login') }}">Войти</a>
+        <a href="{{ url_for('main.register') }}">Регистрация</a>
+      {% endif %}
+    </div>
+  </nav>
+
+  <div class="container">
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <ul class="flashes">
+          {% for message in messages %}
+            <li>{{ message }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+  </div>
+</body>
+</html>

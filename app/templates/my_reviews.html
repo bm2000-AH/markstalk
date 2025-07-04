@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}Мои отзывы{% endblock %}
+
+{% block content %}
+  <h2 class="mb-4">Отзывы, которые я оставил</h2>
+
+  {% if reviews %}
+    {% for review in reviews %}
+      <div class="card mb-3">
+        <div class="card-body">
+          <p><strong>Продавец:</strong> {{ review.seller.username }}</p>
+          <p><strong>Оценка:</strong> {{ review.rating }}★</p>
+          <p>{{ review.text }}</p>
+        </div>
+      </div>
+    {% endfor %}
+  {% else %}
+    <p>Вы ещё не оставляли отзывов.</p>
+  {% endif %}
+{% endblock %}

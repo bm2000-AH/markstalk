@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block content %}
+  <h2>Мои чаты</h2>
+  <ul>
+    {% for chat in chats %}
+      {% set other = chat.user1 if chat.user1 != current_user else chat.user2 %}
+      <li>
+        <a href="{{ url_for('main.chat_detail', chat_id=chat.id) }}">
+          Чат с {{ other.username }}
+        </a>
+      </li>
+    {% endfor %}
+  </ul>
+{% endblock %}
