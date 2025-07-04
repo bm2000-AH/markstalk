@@ -34,3 +34,12 @@ class ComplaintForm(FlaskForm):
 class ResponseForm(FlaskForm):
     response = TextAreaField('Ответ', validators=[DataRequired()])
     submit = SubmitField('Отправить')
+
+from flask_wtf import FlaskForm
+from wtforms import TextAreaField, SubmitField
+from wtforms.validators import DataRequired
+
+class MessageForm(FlaskForm):
+    body = TextAreaField('Сообщение', validators=[DataRequired()])
+    submit = SubmitField('Отправить')
+

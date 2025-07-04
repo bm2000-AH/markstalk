@@ -1,33 +1,90 @@
-{% extends 'base.html' %}
-{% block content %}
-<h2>Чат с {{ chat.user1.username if chat.user2_id == current_user.id else chat.user2.username }}</h2>
+{% extends "base.html" %}
+{% block title %}Чат{% endblock %}
 
-<div style="border:1px solid #ccc; padding:10px; max-height:400px; overflow-y:scroll;">
-    {% for msg in messages %}
-        <div style="margin-bottom:10px;">
-            <strong>{{ msg.sender.username }}</strong>:
-            {% if editing_id == msg.id %}
-                <form method="POST" action="{{ url_for('main.edit_message', chat_id=chat.id, message_id=msg.id) }}">
-                    <input type="text" name="text" value="{{ msg.text }}">
-                    <button type="submit">Сохранить</button>
-                    <a href="{{ url_for('main.chat_detail', chat_id=chat.id) }}">Отмена</a>
-                </form>
-            {% else %}
-                {{ msg.text }}
-                {% if msg.sender_id == current_user.id %}
-                    <form method="POST" action="{{ url_for('main.delete_message', chat_id=chat.id, message_id=msg.id) }}" style="display:inline;">
-                        <button type="submit" onclick="return confirm('Удалить сообщение?')">🗑</button>
-                    </form>
-                    <a href="{{ url_for('main.chat_detail', chat_id=chat.id, edit=msg.id) }}">✏</a>
-                {% endif %}
-            {% endif %}
-            <div style="font-size:small; color:gray;">{{ msg.timestamp.strftime('%d.%m.%Y %H:%M') }}</div>
-        </div>
-    {% endfor %}
+{% block content %}
+<h2 class="mb-4">Чат с {{ other_user.username }}</h2>
+
+<style>
+  .chat-box {
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    padding: 15px;
+    height: 400px;
+    overflow-y: auto;
+    background-color: #f9f9f9;
+  }
+
+  .message {
+    position: relative;
+    padding: 10px 14px;
+    margin: 10px 0;
+    border-radius: 15px;
+    max-width: 60%;
+    clear: both;
+    word-wrap: break-word;
+    color: #000;
+  }
+
+  .from-me {
+    background-color: #dcf8c6;
+    float: right;
+    text-align: right;
+  }
+
+  .from-them {
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    float: left;
+  }
+
+  .message .actions {
+    font-size: 0.8em;
+    margin-top: 6px;
+  }
+
+  .message .actions form {
+    display: inline-block;
+    margin-right: 5px;
+  }
+
+  .message strong {
+    display: block;
+    font-size: 0.8em;
+    color: #555;
+    margin-bottom: 4px;
+  }
+</style>
+
+<div class="chat-box mb-4">
+  {% for message in messages %}
+    <div class="message {% if message.sender_id == current_user.id %}from-me{% else %}from-them{% endif %}">
+      <strong>{{ message.sender.username }}</strong>
+      <div>{{ message.text }}</div>
+
+      {% if message.sender_id == current_user.id %}
+      <div class="actions">
+        <form action="{{ url_for('main.edit_message', chat_id=chat.id, message_id=message.id) }}" method="post">
+          {{ csrf_token() }}
+          <input type="text" name="text" value="{{ message.text }}" class="form-control form-control-sm mb-1" />
+          <button class="btn btn-sm btn-outline-secondary" type="submit">✏️</button>
+        </form>
+        <form action="{{ url_for('main.delete_message', chat_id=chat.id, message_id=message.id) }}" method="post">
+          {{ csrf_token() }}
+          <button class="btn btn-sm btn-outline-danger" type="submit">🗑️</button>
+        </form>
+      </div>
+      {% endif %}
+    </div>
+  {% endfor %}
 </div>
 
-<form method="POST">
-    <input type="text" name="text" placeholder="Введите сообщение" required>
-    <button type="submit">Отправить</button>
+<form method="post">
+  {{ form.hidden_tag() }}
+  <div class="form-group mb-2">
+    {{ form.body(class="form-control", rows=2, placeholder="Введите сообщение...") }}
+  </div>
+  <div class="form-group">
+    {{ form.submit(class="btn btn-primary") }}
+  </div>
 </form>
 {% endblock %}

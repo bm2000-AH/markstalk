@@ -1,18 +1,23 @@
 {% extends 'base.html' %}
+
 {% block content %}
 <div class="container mt-4">
 
+  <!-- Верхняя панель -->
   <div class="d-flex justify-content-between align-items-center mb-4">
+    <!-- Поиск -->
     <form class="form-inline" method="get" action="{{ url_for('main.search') }}">
       <input class="form-control mr-sm-2" type="search" name="q" placeholder="Поиск мест..." aria-label="Поиск">
       <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Поиск</button>
     </form>
 
+    <!-- Кнопка чатов -->
     {% if current_user.is_authenticated %}
       <a href="{{ url_for('main.chat_list') }}" class="btn btn-primary ml-2">Чаты</a>
     {% endif %}
   </div>
 
+  <!-- Список мест -->
   <div class="row">
     {% for place in places %}
       <div class="col-md-4 mb-4">
@@ -29,7 +34,7 @@
 
               {% if current_user.is_authenticated %}
                 <form action="{{ url_for('main.toggle_favorite', place_id=place.id) }}" method="post" class="ml-2">
-                  {{ csrf_token() }}
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                   {% if place in current_user.favorites | map(attribute='place') %}
                     <button class="btn btn-warning btn-sm">★</button>
                   {% else %}

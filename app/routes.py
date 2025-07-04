@@ -3,7 +3,7 @@ from flask import Blueprint, render_template, redirect, url_for, flash, request,
 from flask_login import login_user, logout_user, login_required, current_user
 from werkzeug.utils import secure_filename
 from datetime import datetime
-from app.forms import LoginForm, RegisterForm, PlaceForm, ReviewForm, ComplaintForm, ResponseForm
+from app.forms import MessageForm, LoginForm, RegisterForm, PlaceForm, ReviewForm, ComplaintForm, ResponseForm
 
 
 from app import db
@@ -178,20 +178,34 @@ def chat_list():
 @login_required
 def chat_detail(chat_id):
     chat = Chat.query.get_or_404(chat_id)
-    if current_user.id not in [chat.user1_id, chat.user2_id]:
-        abort(403)
 
-    if request.method == 'POST':
-        text = request.form.get('text')
-        if text:
-            msg = Message(chat_id=chat.id, sender_id=current_user.id, text=text)
-            db.session.add(msg)
-            db.session.commit()
-            return redirect(url_for('main.chat_detail', chat_id=chat.id))
+    if chat.user1_id == current_user.id:
+        other_user = chat.user2
+    else:
+        other_user = chat.user1
 
-    edit_id = request.args.get('edit', type=int)
+    form = MessageForm()
+
+    if form.validate_on_submit():
+        message = Message(
+            chat_id=chat.id,
+            sender_id=current_user.id,
+            text=form.body.data,
+            timestamp=datetime.utcnow()
+        )
+        db.session.add(message)
+        db.session.commit()
+        return redirect(url_for('main.chat_detail', chat_id=chat.id))  # чтобы избежать повторной отправки
+
     messages = Message.query.filter_by(chat_id=chat.id).order_by(Message.timestamp).all()
-    return render_template('chat_detail.html', chat=chat, messages=messages, editing_id=edit_id)
+
+    return render_template(
+        'chat_detail.html',
+        chat=chat,
+        messages=messages,
+        form=form,
+        other_user=other_user
+    )
 
 @bp.route('/chat/<int:chat_id>/edit/<int:message_id>', methods=['POST'])
 @login_required
